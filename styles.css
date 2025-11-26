@@ -356,7 +356,15 @@ body {
 .viewer-section {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 140px);
+  height: 100vh;
+}
+
+/* Hide header when viewer is active */
+#viewerSection:not([style*="display: none"]) ~ * .app-header,
+.viewer-section[style*="display: flex"] ~ * .app-header,
+.app-container:has(#viewerSection[style*="display: flex"]) .app-header,
+.app-container:has(.viewer-section:not([style*="display: none"])) .app-header {
+  display: none;
 }
 
 /* Viewer Navigation Bar */
@@ -400,8 +408,10 @@ body {
   justify-content: center;
 }
 
-.nav-spacer {
-  /* Empty spacer for grid balance */
+.nav-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: flex-end;
 }
 
 .control-btn {
@@ -492,28 +502,28 @@ body {
   background: var(--bg-panel);
   border: 1px solid var(--border-primary);
   border-radius: 8px;
-  padding: var(--spacing-md) var(--spacing-lg);
+  padding: var(--spacing-sm) var(--spacing-lg);
   margin-top: var(--spacing-md);
   display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-lg);
+  flex-wrap: wrap;
 }
 
 .info-item {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-xs);
   text-align: left;
+  white-space: nowrap;
 }
 
 .info-label {
   font-size: 0.875rem;
   color: var(--text-secondary);
   font-weight: 500;
-  min-width: 100px;
 }
 
 .info-value {
@@ -521,7 +531,6 @@ body {
   font-size: 0.875rem;
   color: var(--accent-purple);
   font-weight: 600;
-  flex: 1;
 }
 
 /* ============================================
@@ -578,12 +587,12 @@ kbd {
     flex-wrap: wrap;
   }
 
-  .nav-spacer {
-    display: none;
+  .nav-actions {
+    justify-content: center;
   }
 
   .viewer-section {
-    height: calc(100vh - 180px);
+    height: 100vh;
   }
 
   .stats-grid {

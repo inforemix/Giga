@@ -28,6 +28,7 @@ class GigaZoom {
     this.uploadSection = document.getElementById('uploadSection');
     this.processingOverlay = document.getElementById('processingOverlay');
     this.viewerSection = document.getElementById('viewerSection');
+    this.appHeader = document.querySelector('.app-header');
 
     // Processing UI
     this.processingMessage = document.getElementById('processingMessage');
@@ -152,9 +153,12 @@ class GigaZoom {
       // Initialize viewer
       this.initViewer();
 
-      // Show viewer
+      // Show viewer and hide header
       this.processingOverlay.style.display = 'none';
       this.viewerSection.style.display = 'flex';
+      if (this.appHeader) {
+        this.appHeader.style.display = 'none';
+      }
 
       // Update info panel
       this.imageName_display.textContent = this.imageName;
@@ -424,11 +428,14 @@ class GigaZoom {
     this.viewer?.destroy();
     this.viewer = null;
 
-    // Reset UI
+    // Reset UI and show header
     this.viewerSection.style.display = 'none';
     this.processingOverlay.style.display = 'none';
     this.uploadSection.style.display = 'block';
     this.fileInput.value = '';
+    if (this.appHeader) {
+      this.appHeader.style.display = '';
+    }
   }
 
   updateProgress(percent, message) {
