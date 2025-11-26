@@ -14,6 +14,13 @@
 </head>
 <body>
   <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <h1 class="app-title">
+        <span class="title-icon">⚡</span>
+        GigaZoom
+      </h1>
+    </header>
 
     <!-- Main Content -->
     <main class="main-content">
@@ -98,8 +105,18 @@
 
       <!-- Viewer Section (shown after processing) -->
       <div id="viewerSection" class="viewer-section" style="display: none;">
-        <div class="viewer-controls">
-          <div class="control-group">
+        <nav class="viewer-nav">
+          <!-- Left: Shortcuts -->
+          <div class="nav-shortcuts">
+            <span class="shortcuts-title">Shortcuts:</span>
+            <span class="shortcut-item"><kbd>+</kbd> Zoom In</span>
+            <span class="shortcut-item"><kbd>-</kbd> Zoom Out</span>
+            <span class="shortcut-item"><kbd>0</kbd> Reset</span>
+            <span class="shortcut-item"><kbd>F</kbd> Fullscreen</span>
+          </div>
+
+          <!-- Center: Control Buttons -->
+          <div class="nav-controls">
             <button class="control-btn btn-zoom-in" id="btnZoomIn" title="Zoom In (+)">
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -122,9 +139,6 @@
                 <path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </button>
-          </div>
-
-          <div class="control-group">
             <button class="control-btn control-btn-export" id="btnExport" title="Export DZI">
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M10 2v10m0 0l-4-4m4 4l4-4M3 15v2a2 2 0 002 2h10a2 2 0 002-2v-2" stroke="currentColor" stroke-width="2" fill="none"/>
@@ -138,50 +152,35 @@
               <span>New</span>
             </button>
           </div>
-        </div>
+
+          <!-- Right: Empty (for balance) -->
+          <div class="nav-spacer"></div>
+        </nav>
 
         <!-- OpenSeadragon Viewer -->
         <div id="openseadragon" class="viewer-container"></div>
 
         <!-- Image Info Panel -->
         <div class="info-panel">
-          <div class="info-row">
+          <div class="info-item">
             <span class="info-label">Image:</span>
             <span class="info-value" id="imageName">-</span>
           </div>
-          <div class="info-row">
+          <div class="info-item">
             <span class="info-label">Dimensions:</span>
             <span class="info-value" id="imageDimensions">-</span>
           </div>
-          <div class="info-row">
+          <div class="info-item">
             <span class="info-label">Megapixels:</span>
             <span class="info-value" id="imageMegapixels">-</span>
           </div>
-          <div class="info-row">
+          <div class="info-item">
             <span class="info-label">Zoom Levels:</span>
             <span class="info-value" id="imageZoomLevels">-</span>
           </div>
         </div>
       </div>
     </main>
-
-    <!-- Footer -->
-    <footer class="app-footer">
-      <div class="footer-content">
-        <div class="footer-links">
-          <span>Built with <a href="https://openseadragon.github.io/" target="_blank">OpenSeadragon</a></span>
-          <span>100% Client-Side</span>
-          <span><a href="https://github.com" target="_blank">View Source</a></span>
-        </div>
-        <div class="footer-shortcuts">
-          <span class="shortcuts-label">Shortcuts:</span>
-          <kbd>+</kbd> Zoom In
-          <kbd>-</kbd> Zoom Out
-          <kbd>0</kbd> Reset
-          <kbd>F</kbd> Fullscreen
-        </div>
-      </div>
-    </footer>
   </div>
 
   <script src="app.js"></script>
