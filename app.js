@@ -37,12 +37,6 @@ class GigaZoom {
     this.tileCount = document.getElementById('tileCount');
     this.memoryUsage = document.getElementById('memoryUsage');
 
-    // Viewer info
-    this.imageName_display = document.getElementById('imageName');
-    this.imageDimensions = document.getElementById('imageDimensions');
-    this.imageMegapixels = document.getElementById('imageMegapixels');
-    this.imageZoomLevels = document.getElementById('imageZoomLevels');
-
     // Controls
     this.btnZoomIn = document.getElementById('btnZoomIn');
     this.btnZoomOut = document.getElementById('btnZoomOut');
@@ -150,13 +144,7 @@ class GigaZoom {
 
       // Show viewer
       this.processingOverlay.style.display = 'none';
-      this.viewerSection.style.display = 'flex';
-
-      // Update info panel
-      this.imageName_display.textContent = this.imageName;
-      this.imageDimensions.textContent = `${this.imageWidth} × ${this.imageHeight}`;
-      this.imageMegapixels.textContent = `${megapixels.toFixed(1)} MP`;
-      this.imageZoomLevels.textContent = this.levels.length;
+      this.viewerSection.style.display = 'block';
 
     } catch (error) {
       console.error('Error processing file:', error);
@@ -302,12 +290,11 @@ class GigaZoom {
 
       // Zoom settings
       minZoomImageRatio: 0.8,
-      maxZoomPixelRatio: 4,
+      maxZoomPixelRatio: 1, // Max zoom is 100%
       visibilityRatio: 1.0,
 
       // Navigation
-      showNavigator: true,
-      navigatorPosition: 'BOTTOM_RIGHT',
+      showNavigator: false,
       showNavigationControl: false,
       showFullPageControl: false,
 
@@ -321,6 +308,177 @@ class GigaZoom {
     });
 
     console.log('Viewer initialized');
+
+    // Initialize Mission Control UI
+    this.initMissionControlUI();
+  }
+
+  initMissionControlUI() {
+    // Draw trajectory chart
+    this.drawTrajectoryChart();
+
+    // Draw schematic
+    this.drawSchematic();
+
+    // Populate mission data
+    this.updateMissionData();
+  }
+
+  drawTrajectoryChart() {
+    const canvas = document.getElementById('trajectoryChart');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    const width = canvas.width;
+    const height = canvas.height;
+
+    // Clear canvas
+    ctx.fillStyle = '#12121f';
+    ctx.fillRect(0, 0, width, height);
+
+    // Draw sine wave pattern (orbital trajectory)
+    ctx.strokeStyle = '#8b5cf6';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+
+    for (let x = 0; x < width; x++) {
+      const y = height / 2 + Math.sin(x * 0.03) * 40 * Math.sin(x * 0.007);
+      if (x === 0) {
+        ctx.moveTo(x, y);
+      } else {
+        ctx.lineTo(x, y);
+      }
+    }
+    ctx.stroke();
+
+    // Add grid lines
+    ctx.strokeStyle = '#2a2a3e';
+    ctx.lineWidth = 1;
+    for (let i = 0; i < width; i += 40) {
+      ctx.beginPath();
+      ctx.moveTo(i, 0);
+      ctx.lineTo(i, height);
+      ctx.stroke();
+    }
+    for (let i = 0; i < height; i += 40) {
+      ctx.beginPath();
+      ctx.moveTo(0, i);
+      ctx.lineTo(width, i);
+      ctx.stroke();
+    }
+  }
+
+  drawSchematic() {
+    const canvas = document.getElementById('schematicCanvas');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    const width = canvas.width;
+    const height = canvas.height;
+
+    // Clear canvas
+    ctx.fillStyle = '#12121f';
+    ctx.fillRect(0, 0, width, height);
+
+    // Draw a simplified space station schematic
+    const centerX = width / 2;
+    const centerY = height / 2;
+
+    // Central module
+    ctx.strokeStyle = '#6366f1';
+    ctx.fillStyle = '#20203a';
+    ctx.lineWidth = 2;
+    ctx.fillRect(centerX - 30, centerY - 15, 60, 30);
+    ctx.strokeRect(centerX - 30, centerY - 15, 60, 30);
+
+    // Solar panels (left)
+    ctx.strokeStyle = '#8b5cf6';
+    ctx.fillStyle = '#1a1a2e';
+    ctx.fillRect(centerX - 100, centerY - 25, 60, 50);
+    ctx.strokeRect(centerX - 100, centerY - 25, 60, 50);
+
+    // Connection line (left)
+    ctx.strokeStyle = '#6366f1';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(centerX - 40, centerY);
+    ctx.lineTo(centerX - 100, centerY);
+    ctx.stroke();
+
+    // Solar panels (right)
+    ctx.strokeStyle = '#8b5cf6';
+    ctx.fillStyle = '#1a1a2e';
+    ctx.fillRect(centerX + 40, centerY - 25, 60, 50);
+    ctx.strokeRect(centerX + 40, centerY - 25, 60, 50);
+
+    // Connection line (right)
+    ctx.strokeStyle = '#6366f1';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(centerX + 30, centerY);
+    ctx.lineTo(centerX + 40, centerY);
+    ctx.stroke();
+
+    // Add some detail lines on solar panels
+    ctx.strokeStyle = '#4a4a6a';
+    ctx.lineWidth = 1;
+    for (let i = 0; i < 5; i++) {
+      const y = centerY - 20 + i * 10;
+      ctx.beginPath();
+      ctx.moveTo(centerX - 95, y);
+      ctx.lineTo(centerX - 45, y);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(centerX + 45, y);
+      ctx.lineTo(centerX + 95, y);
+      ctx.stroke();
+    }
+
+    // Add indicator lights
+    ctx.fillStyle = '#10b981';
+    ctx.beginPath();
+    ctx.arc(centerX - 15, centerY - 5, 3, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#8b5cf6';
+    ctx.beginPath();
+    ctx.arc(centerX + 15, centerY - 5, 3, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Add labels
+    ctx.fillStyle = '#a0a0b8';
+    ctx.font = '9px "JetBrains Mono", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('Power', centerX - 70, centerY + 40);
+    ctx.fillText('90%', centerX - 70, centerY + 52);
+    ctx.fillText('Power', centerX + 70, centerY + 40);
+    ctx.fillText('88%', centerX + 70, centerY + 52);
+    ctx.fillText('Integrity', centerX, centerY + 40);
+    ctx.fillText('70%', centerX, centerY + 52);
+  }
+
+  updateMissionData() {
+    // Generate random but consistent data based on image dimensions
+    const seed = this.imageWidth + this.imageHeight;
+
+    // Orbital data
+    document.getElementById('inclination').textContent = `${(51.5 + (seed % 10) * 0.1).toFixed(1)}°`;
+    document.getElementById('apogee').textContent = `${400 + (seed % 50)} km`;
+    document.getElementById('perigee').textContent = `${380 + (seed % 30)} km`;
+
+    // Mission parameters
+    const days = Math.floor(seed / 1000) % 30 + 1;
+    const hours = (seed % 24);
+    const minutes = (seed % 60);
+    document.getElementById('orbitAdjustment').textContent = `+${(seed % 5)}.2Km (PENDING)`;
+    document.getElementById('fuelConsumption').textContent = `${150 + (seed % 50)}Kg/h`;
+
+    // Mission readouts
+    document.getElementById('missionDuration').textContent = `${days}d ${hours}h ${minutes}m`;
+    document.getElementById('fuelStatus').textContent = `${85 + (seed % 10)}%`;
+    document.getElementById('distance').textContent = `${(12000 + (seed % 5000)).toLocaleString()}km`;
+    document.getElementById('temperature').textContent = `${20 + (seed % 10)}°C`;
+    document.getElementById('radiation').textContent = `${(seed % 10) / 10}.5VEv/h`;
   }
 
   async exportDZI() {
