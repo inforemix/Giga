@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GigaZoom - Browser-Based Gigapixel Viewer</title>
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- OpenSeadragon -->
+  <script src="https://cdn.jsdelivr.net/npm/openseadragon@4.1.0/build/openseadragon/openseadragon.min.js"></script>
+
+  <!-- JSZip for export -->
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <h1 class="app-title">
+        <span class="title-icon">⚡</span>
+        GigaZoom
+      </h1>
+      <p class="app-subtitle">Browser-Based Gigapixel Image Viewer</p>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Upload Zone (shown initially) -->
+      <div id="uploadSection" class="upload-section">
+        <div class="upload-zone" id="uploadZone">
+          <div class="upload-icon">📸</div>
+          <h2 class="upload-title">Drop Gigapixel Image Here</h2>
+          <p class="upload-description">
+            Or click to browse • Supports JPG, PNG, WebP
+          </p>
+          <p class="upload-hint">
+            Client-side processing • Your images never leave your browser
+          </p>
+          <input
+            type="file"
+            id="fileInput"
+            accept="image/jpeg,image/png,image/webp"
+            style="display: none;"
+          >
+        </div>
+
+        <!-- Info Cards -->
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="info-icon">🔒</div>
+            <h3>100% Private</h3>
+            <p>All processing happens in your browser. No uploads.</p>
+          </div>
+          <div class="info-card">
+            <div class="info-icon">⚡</div>
+            <h3>Instant Zoom</h3>
+            <p>Smooth pan and zoom with tile-based rendering.</p>
+          </div>
+          <div class="info-card">
+            <div class="info-icon">📦</div>
+            <h3>Export DZI</h3>
+            <p>Download as Deep Zoom Image for hosting anywhere.</p>
+          </div>
+          <div class="info-card">
+            <div class="info-icon">🎨</div>
+            <h3>No Limits</h3>
+            <p>View 100+ megapixel images with ease.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Processing Overlay -->
+      <div id="processingOverlay" class="processing-overlay" style="display: none;">
+        <div class="processing-card">
+          <div class="processing-spinner"></div>
+          <h2 class="processing-title">Processing Image</h2>
+          <p class="processing-message" id="processingMessage">Loading image...</p>
+
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <p class="progress-text" id="progressText">0%</p>
+
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="stat-label">Size:</span>
+              <span class="stat-value" id="imageSize">-</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Levels:</span>
+              <span class="stat-value" id="levelCount">-</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Tiles:</span>
+              <span class="stat-value" id="tileCount">-</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Memory:</span>
+              <span class="stat-value" id="memoryUsage">-</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Viewer Section (shown after processing) -->
+      <div id="viewerSection" class="viewer-section" style="display: none;">
+        <div class="viewer-controls">
+          <div class="control-group">
+            <button class="control-btn" id="btnZoomIn" title="Zoom In (+)">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <button class="control-btn" id="btnZoomOut" title="Zoom Out (-)">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <button class="control-btn" id="btnHome" title="Reset View (0)">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M3 9l7-7 7 7v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke="currentColor" stroke-width="2" fill="none"/>
+              </svg>
+            </button>
+            <button class="control-btn" id="btnFullscreen" title="Fullscreen (F)">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M3 3h6M15 3h2v2M3 15v2h2M15 17h2v-2" stroke="currentColor" stroke-width="2" fill="none"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="control-group">
+            <button class="control-btn control-btn-accent" id="btnExport" title="Export DZI">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10 2v10m0 0l-4-4m4 4l4-4M3 15v2a2 2 0 002 2h10a2 2 0 002-2v-2" stroke="currentColor" stroke-width="2" fill="none"/>
+              </svg>
+              <span>Export</span>
+            </button>
+            <button class="control-btn" id="btnNewImage" title="Load New Image">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M4 16v-2a2 2 0 012-2h8a2 2 0 012 2v2M10 2v8m0 0l3-3m-3 3l-3-3" stroke="currentColor" stroke-width="2" fill="none"/>
+              </svg>
+              <span>New</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- OpenSeadragon Viewer -->
+        <div id="openseadragon" class="viewer-container"></div>
+
+        <!-- Image Info Panel -->
+        <div class="info-panel">
+          <div class="info-row">
+            <span class="info-label">Image:</span>
+            <span class="info-value" id="imageName">-</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Dimensions:</span>
+            <span class="info-value" id="imageDimensions">-</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Megapixels:</span>
+            <span class="info-value" id="imageMegapixels">-</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Zoom Levels:</span>
+            <span class="info-value" id="imageZoomLevels">-</span>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>
+        Built with <a href="https://openseadragon.github.io/" target="_blank">OpenSeadragon</a> •
+        100% client-side • No data uploaded •
+        <a href="https://github.com" target="_blank">View Source</a>
+      </p>
+      <p class="shortcuts-hint">
+        Keyboard: <kbd>+</kbd> zoom in • <kbd>-</kbd> zoom out • <kbd>0</kbd> reset • <kbd>F</kbd> fullscreen
+      </p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
