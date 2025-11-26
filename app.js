@@ -20,6 +20,7 @@ class GigaZoom {
     this.levels = [];
     this.tiles = new Map(); // Map of "level_x_y" => Blob URL
     this.viewer = null;
+    this.cancelProcessing = false;
 
     // DOM elements
     this.uploadZone = document.getElementById('uploadZone');
@@ -27,6 +28,7 @@ class GigaZoom {
     this.uploadSection = document.getElementById('uploadSection');
     this.processingOverlay = document.getElementById('processingOverlay');
     this.viewerSection = document.getElementById('viewerSection');
+    this.appHeader = document.querySelector('.app-header');
 
     // Processing UI
     this.processingMessage = document.getElementById('processingMessage');
@@ -50,6 +52,7 @@ class GigaZoom {
     this.btnFullscreen = document.getElementById('btnFullscreen');
     this.btnExport = document.getElementById('btnExport');
     this.btnNewImage = document.getElementById('btnNewImage');
+    this.btnCancelProcessing = document.getElementById('btnCancelProcessing');
 
     // Bind events
     this.bindEvents();
@@ -86,6 +89,7 @@ class GigaZoom {
     this.btnFullscreen?.addEventListener('click', () => this.viewer?.setFullScreen(!this.viewer.isFullPage()));
     this.btnExport?.addEventListener('click', () => this.exportDZI());
     this.btnNewImage?.addEventListener('click', () => this.reset());
+    this.btnCancelProcessing?.addEventListener('click', () => this.cancel());
 
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
@@ -124,6 +128,7 @@ class GigaZoom {
 
   async processFile(file) {
     try {
+      this.cancelProcessing = false;
       this.imageName = file.name;
 
       // Show processing overlay
@@ -148,9 +153,12 @@ class GigaZoom {
       // Initialize viewer
       this.initViewer();
 
-      // Show viewer
+      // Show viewer and hide header
       this.processingOverlay.style.display = 'none';
       this.viewerSection.style.display = 'flex';
+      if (this.appHeader) {
+        this.appHeader.style.display = 'none';
+      }
 
       // Update info panel
       this.imageName_display.textContent = this.imageName;
@@ -159,10 +167,19 @@ class GigaZoom {
       this.imageZoomLevels.textContent = this.levels.length;
 
     } catch (error) {
-      console.error('Error processing file:', error);
-      alert('Error processing image: ' + error.message);
+      if (error.message === 'Processing cancelled') {
+        console.log('Processing cancelled by user');
+      } else {
+        console.error('Error processing file:', error);
+        alert('Error processing image: ' + error.message);
+      }
       this.reset();
     }
+  }
+
+  cancel() {
+    this.cancelProcessing = true;
+    this.updateProgress(0, 'Cancelling...');
   }
 
   async loadImage(file) {
@@ -211,6 +228,11 @@ class GigaZoom {
     let tilesGenerated = 0;
 
     for (let i = this.levels.length - 1; i >= 0; i--) {
+      // Check for cancellation
+      if (this.cancelProcessing) {
+        throw new Error('Processing cancelled');
+      }
+
       const levelInfo = this.levels[i];
       const level = levelInfo.level;
 
@@ -233,6 +255,11 @@ class GigaZoom {
       // Generate tiles for this level
       for (let row = 0; row < levelInfo.rows; row++) {
         for (let col = 0; col < levelInfo.cols; col++) {
+          // Check for cancellation
+          if (this.cancelProcessing) {
+            throw new Error('Processing cancelled');
+          }
+
           const tileCanvas = new OffscreenCanvas(this.tileSize, this.tileSize);
           const tileCtx = tileCanvas.getContext('2d');
 
@@ -302,7 +329,7 @@ class GigaZoom {
 
       // Zoom settings
       minZoomImageRatio: 0.8,
-      maxZoomPixelRatio: 4,
+      maxZoomPixelRatio: 1, // Max zoom is 100%
       visibilityRatio: 1.0,
 
       // Navigation
@@ -401,11 +428,14 @@ class GigaZoom {
     this.viewer?.destroy();
     this.viewer = null;
 
-    // Reset UI
+    // Reset UI and show header
     this.viewerSection.style.display = 'none';
     this.processingOverlay.style.display = 'none';
     this.uploadSection.style.display = 'block';
     this.fileInput.value = '';
+    if (this.appHeader) {
+      this.appHeader.style.display = '';
+    }
   }
 
   updateProgress(percent, message) {
