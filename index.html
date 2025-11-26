@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mission Control - GigaZoom</title>
+  <title>GigaZoom - Browser-Based Gigapixel Viewer</title>
   <link rel="stylesheet" href="styles.css">
 
   <!-- OpenSeadragon -->
@@ -16,37 +16,55 @@
   <div class="app-container">
     <!-- Header -->
     <header class="app-header">
-      <div class="header-left">
-        <button class="menu-button">☰</button>
-        <h1 class="app-title">Mission Control</h1>
-      </div>
-      <nav class="header-nav">
-        <button class="nav-tab active">Dashboard</button>
-        <button class="nav-tab">Trajectory</button>
-        <button class="nav-tab">Reports</button>
-      </nav>
+      <h1 class="app-title">
+        <span class="title-icon">⚡</span>
+        GigaZoom
+      </h1>
+      <p class="app-subtitle">Browser-Based Gigapixel Image Viewer</p>
     </header>
 
     <!-- Main Content -->
     <main class="main-content">
       <!-- Upload Zone (shown initially) -->
       <div id="uploadSection" class="upload-section">
-        <div class="upload-overlay">
-          <div class="upload-zone" id="uploadZone">
-            <div class="upload-icon">🛰️</div>
-            <h2 class="upload-title">Load Mission Image</h2>
-            <p class="upload-description">
-              Drop gigapixel image here or click to browse
-            </p>
-            <p class="upload-hint">
-              Supports JPG, PNG, WebP • Client-side processing
-            </p>
-            <input
-              type="file"
-              id="fileInput"
-              accept="image/jpeg,image/png,image/webp"
-              style="display: none;"
-            >
+        <div class="upload-zone" id="uploadZone">
+          <div class="upload-icon">📸</div>
+          <h2 class="upload-title">Drop Gigapixel Image Here</h2>
+          <p class="upload-description">
+            Or click to browse • Supports JPG, PNG, WebP
+          </p>
+          <p class="upload-hint">
+            Client-side processing • Your images never leave your browser
+          </p>
+          <input
+            type="file"
+            id="fileInput"
+            accept="image/jpeg,image/png,image/webp"
+            style="display: none;"
+          >
+        </div>
+
+        <!-- Info Cards -->
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="info-icon">🔒</div>
+            <h3>100% Private</h3>
+            <p>All processing happens in your browser. No uploads.</p>
+          </div>
+          <div class="info-card">
+            <div class="info-icon">⚡</div>
+            <h3>Instant Zoom</h3>
+            <p>Smooth pan and zoom with tile-based rendering.</p>
+          </div>
+          <div class="info-card">
+            <div class="info-icon">📦</div>
+            <h3>Export DZI</h3>
+            <p>Download as Deep Zoom Image for hosting anywhere.</p>
+          </div>
+          <div class="info-card">
+            <div class="info-icon">🎨</div>
+            <h3>No Limits</h3>
+            <p>View 100+ megapixel images with ease.</p>
           </div>
         </div>
       </div>
@@ -84,201 +102,84 @@
         </div>
       </div>
 
-      <!-- Mission Control Dashboard (shown after processing) -->
-      <div id="viewerSection" class="mission-dashboard" style="display: none;">
-        <div class="dashboard-grid">
-          <!-- Left Column -->
-          <div class="left-column">
-            <!-- Orbital Trajectory Panel -->
-            <div class="panel">
-              <h3 class="panel-title">Orbital Trajectory</h3>
-              <div class="panel-content">
-                <canvas id="trajectoryChart" width="340" height="160"></canvas>
-                <div class="trajectory-stats">
-                  <div class="stat-row">
-                    <span class="stat-label">Inclination:</span>
-                    <span class="stat-value" id="inclination">-</span>
-                  </div>
-                  <div class="stat-row">
-                    <span class="stat-label">Apogee:</span>
-                    <span class="stat-value" id="apogee">-</span>
-                  </div>
-                  <div class="stat-row">
-                    <span class="stat-label">Perigee:</span>
-                    <span class="stat-value" id="perigee">-</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Spacecraft Status Panel -->
-            <div class="panel">
-              <h3 class="panel-title">Spacecraft Status</h3>
-              <div class="panel-content">
-                <div class="status-bar">
-                  <span class="status-label">Propulsion 1:</span>
-                  <div class="progress-bar-mini"><div class="progress-fill-success" style="width: 100%"></div></div>
-                </div>
-                <div class="status-bar">
-                  <span class="status-label">Propulsion 2:</span>
-                  <div class="progress-bar-mini"><div class="progress-fill-success" style="width: 100%"></div></div>
-                </div>
-                <div class="status-bar">
-                  <span class="status-label">Communication:</span>
-                  <div class="progress-bar-mini"><div class="progress-fill-warning" style="width: 75%"></div></div>
-                </div>
-                <div class="status-bar">
-                  <span class="status-label">Sensor 1:</span>
-                  <div class="progress-bar-mini"><div class="progress-fill-warning" style="width: 70%"></div></div>
-                </div>
-                <div class="status-bar">
-                  <span class="status-label">Sensor 2:</span>
-                  <div class="progress-bar-mini"><div class="progress-fill-warning" style="width: 65%"></div></div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Station Systems Panel -->
-            <div class="panel">
-              <h3 class="panel-title">Station Systems</h3>
-              <div class="panel-content">
-                <div class="system-item">
-                  <div class="system-icon">🔆</div>
-                  <div class="system-info">
-                    <div class="system-label">Solar Arrays:</div>
-                    <div class="system-status status-active">Active</div>
-                    <div class="progress-bar-mini"><div class="progress-fill-success" style="width: 100%"></div></div>
-                  </div>
-                </div>
-                <div class="system-item">
-                  <div class="system-icon">🌡️</div>
-                  <div class="system-info">
-                    <div class="system-label">Thermal Control:</div>
-                    <div class="system-status status-optimal">Optimal</div>
-                    <div class="progress-bar-mini"><div class="progress-fill-success" style="width: 95%"></div></div>
-                  </div>
-                </div>
-                <div class="system-item">
-                  <div class="system-icon">💧</div>
-                  <div class="system-info">
-                    <div class="system-label">Water Recycling:</div>
-                    <div class="system-status status-operational">Operational</div>
-                    <div class="progress-bar-mini"><div class="progress-fill-success" style="width: 85%"></div></div>
-                  </div>
-                </div>
-              </div>
-            </div>
+      <!-- Viewer Section (shown after processing) -->
+      <div id="viewerSection" class="viewer-section" style="display: none;">
+        <div class="viewer-controls">
+          <div class="control-group">
+            <button class="control-btn" id="btnZoomIn" title="Zoom In (+)">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <button class="control-btn" id="btnZoomOut" title="Zoom Out (-)">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <button class="control-btn" id="btnHome" title="Reset View (0)">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M3 9l7-7 7 7v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke="currentColor" stroke-width="2" fill="none"/>
+              </svg>
+            </button>
+            <button class="control-btn" id="btnFullscreen" title="Fullscreen (F)">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M3 3h6M15 3h2v2M3 15v2h2M15 17h2v-2" stroke="currentColor" stroke-width="2" fill="none"/>
+              </svg>
+            </button>
           </div>
 
-          <!-- Center Column -->
-          <div class="center-column">
-            <div class="panel map-panel">
-              <h3 class="panel-title">Orbital Trajectory Map</h3>
-              <!-- OpenSeadragon Viewer -->
-              <div id="openseadragon" class="map-viewer"></div>
-              <!-- Map Controls -->
-              <div class="map-controls">
-                <button class="map-control-btn" id="btnZoomIn" title="Zoom In (+)">+</button>
-                <button class="map-control-btn" id="btnZoomOut" title="Zoom Out (-)">−</button>
-                <button class="map-control-btn" id="btnHome" title="Reset View (0)">⌂</button>
-                <button class="map-control-btn" id="btnFullscreen" title="Fullscreen (F)">⛶</button>
-              </div>
-            </div>
+          <div class="control-group">
+            <button class="control-btn control-btn-accent" id="btnExport" title="Export DZI">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10 2v10m0 0l-4-4m4 4l4-4M3 15v2a2 2 0 002 2h10a2 2 0 002-2v-2" stroke="currentColor" stroke-width="2" fill="none"/>
+              </svg>
+              <span>Export</span>
+            </button>
+            <button class="control-btn" id="btnNewImage" title="Load New Image">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M4 16v-2a2 2 0 012-2h8a2 2 0 012 2v2M10 2v8m0 0l3-3m-3 3l-3-3" stroke="currentColor" stroke-width="2" fill="none"/>
+              </svg>
+              <span>New</span>
+            </button>
           </div>
+        </div>
 
-          <!-- Right Column -->
-          <div class="right-column">
-            <!-- Mission Parameters Panel -->
-            <div class="panel">
-              <h3 class="panel-title">Mission Parameters</h3>
-              <div class="panel-content">
-                <div class="parameter-item">
-                  <div class="parameter-label">Orbit Adjustment:</div>
-                  <div class="parameter-value" id="orbitAdjustment">-</div>
-                  <div class="parameter-controls">
-                    <button class="param-btn">+</button>
-                    <button class="param-btn active-param">Adjust</button>
-                    <button class="param-btn">-</button>
-                    <button class="param-btn">+</button>
-                    <button class="param-btn active-param">Adjust</button>
-                    <button class="param-btn">-</button>
-                  </div>
-                </div>
-                <div class="parameter-item">
-                  <div class="parameter-label">Fuel Consumption:</div>
-                  <div class="parameter-value" id="fuelConsumption">-</div>
-                </div>
-                <div class="parameter-item">
-                  <div class="parameter-label">Power Distribution</div>
-                  <div class="slider-label">Thrust Level</div>
-                  <input type="range" class="slider" min="0" max="100" value="75">
-                  <input type="range" class="slider" min="0" max="100" value="85">
-                </div>
-              </div>
-            </div>
+        <!-- OpenSeadragon Viewer -->
+        <div id="openseadragon" class="viewer-container"></div>
 
-            <!-- Space Station Schematic -->
-            <div class="panel">
-              <h3 class="panel-title">Space Station Schematic</h3>
-              <div class="panel-content schematic-panel">
-                <canvas id="schematicCanvas" width="320" height="180"></canvas>
-              </div>
-            </div>
-
-            <!-- Mission Parameter Readouts -->
-            <div class="panel">
-              <h3 class="panel-title">Mission Parameter Readouts</h3>
-              <div class="panel-content readouts-panel">
-                <div class="readout-grid">
-                  <div class="readout-item">
-                    <div class="readout-label">Mission Duration</div>
-                    <div class="readout-value" id="missionDuration">-</div>
-                  </div>
-                  <div class="readout-item">
-                    <div class="readout-label">Fuel Status</div>
-                    <div class="readout-value" id="fuelStatus">-</div>
-                  </div>
-                  <div class="readout-item">
-                    <div class="readout-label">Distance</div>
-                    <div class="readout-value" id="distance">-</div>
-                  </div>
-                  <div class="readout-item">
-                    <div class="readout-label">Temperature</div>
-                    <div class="readout-value" id="temperature">-</div>
-                  </div>
-                  <div class="readout-item">
-                    <div class="readout-label">Fuel Status</div>
-                    <div class="readout-value-bar"><div class="readout-bar" style="width: 85%"></div></div>
-                  </div>
-                  <div class="readout-item">
-                    <div class="readout-label">Radiation</div>
-                    <div class="readout-value" id="radiation">-</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="action-buttons">
-              <button class="control-btn control-btn-accent" id="btnExport" title="Export DZI">
-                <span>Export DZI</span>
-              </button>
-              <button class="control-btn" id="btnNewImage" title="Load New Image">
-                <span>New Image</span>
-              </button>
-            </div>
+        <!-- Image Info Panel -->
+        <div class="info-panel">
+          <div class="info-row">
+            <span class="info-label">Image:</span>
+            <span class="info-value" id="imageName">-</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Dimensions:</span>
+            <span class="info-value" id="imageDimensions">-</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Megapixels:</span>
+            <span class="info-value" id="imageMegapixels">-</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Zoom Levels:</span>
+            <span class="info-value" id="imageZoomLevels">-</span>
           </div>
         </div>
       </div>
     </main>
 
-    <!-- Hidden file input -->
-    <input
-      type="file"
-      id="fileInputHidden"
-      accept="image/jpeg,image/png,image/webp"
-      style="display: none;"
-    >
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>
+        Built with <a href="https://openseadragon.github.io/" target="_blank">OpenSeadragon</a> •
+        100% client-side • No data uploaded •
+        <a href="https://github.com" target="_blank">View Source</a>
+      </p>
+      <p class="shortcuts-hint">
+        Keyboard: <kbd>+</kbd> zoom in • <kbd>-</kbd> zoom out • <kbd>0</kbd> reset • <kbd>F</kbd> fullscreen
+      </p>
+    </footer>
   </div>
 
   <script src="app.js"></script>
